@@ -3,8 +3,10 @@ package com.example.diceroller
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import
+import kotlin.concurrent.thread
+
 
 /**
  * This activity allows the user to roll a dice and view the result
@@ -33,6 +35,16 @@ class MainActivity : AppCompatActivity() {
      * Roll the dice and update the screen with the result.
      */
     private fun rollDice() {
+        Toast.makeText(this, "Dice was rolled!", Toast.LENGTH_SHORT).show()
+        thread {
+            repeat((3..6).random()) {
+                roll()
+                Thread.sleep(100)
+            }
+        }
+    }
+
+    fun roll() {
         // Create new Dice object with 6 sides and roll it
         val dice = Dice(6)
         val diceRoll = dice.roll()
@@ -50,11 +62,13 @@ class MainActivity : AppCompatActivity() {
             else -> R.drawable.dice_6
         }
 
-        // Update the ImageView with the correct drawable resource ID
-        diceImage.setImageResource(drawableResource)
+        runOnUiThread {
+            // Update the ImageView with the correct drawable resource ID
+            diceImage.setImageResource(drawableResource)
 
-        // Update the content description
-        diceImage.contentDescription = diceRoll.toString()
+            // Update the content description
+            diceImage.contentDescription = diceRoll.toString()
+        }
     }
 }
 
